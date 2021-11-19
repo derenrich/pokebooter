@@ -26,8 +26,7 @@ canonicalize:
 	mov al, 0x03
 	int 0x10
 
-
-	; load compiled C code
+	; load compiled C code to RAM
 	call load_c
 
 	;; enter protected mode
@@ -60,7 +59,7 @@ clear_pipe:
 	mov esp, 090000h
     mov byte [ds:0B8000h], 'P'
     mov byte [ds:0B8001h], 1Bh
-	jmp 08h:0x8000
+	jmp 0x8000
 gdt:
 gdt_null:
 	dq 0

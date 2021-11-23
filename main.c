@@ -14,8 +14,7 @@ void write_string(int color, const char *string)
 void main() {
     write_string(0xf0, "Hello, World! Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!");//, "Hello, World!");
 
+    __asm__("cli");
     __asm__("hlt");
 
-} 
-
-
+}

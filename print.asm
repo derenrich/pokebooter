@@ -23,7 +23,9 @@ print_hex:
 	shr ax, 4
 	call print_hex_val
 	mov ax, bx	
-	call print_hex_val			
+	call print_hex_val
+	mov ax, 32 ; print space
+	call print_char
 	popa
 	ret
 print_hex_val:

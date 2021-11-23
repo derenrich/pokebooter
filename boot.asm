@@ -1,13 +1,14 @@
 [BITS 16]
 [ORG 0x7C00]
 
+%include "memory_map.asm"
 
 start_:
 	jmp 0h:canonicalize 	; force us to CS = 0
 canonicalize:
 	mov [BOOT_DRIVE], dl	; remember our boot drive
-	mov bp, 0x7000 		; setup stack
-	mov sp, 0x7000   
+	mov bp, REAL_STACK 		; setup stack
+	mov sp, REAL_STACK   
 	;;  clear screen 
 	mov ah, 07h
 	mov al, 0
@@ -19,15 +20,18 @@ canonicalize:
 	;; print welcome message
 	mov si, welcome
 	call print_string
-	call floppy_init
+	call disk_init
+
 
 	; setup video mode
 	mov ah, 0x00
 	mov al, 0x03
 	int 0x10
 
+
 	; load compiled C code to RAM
-	call load_c
+	;call load_c
+	call disk_load_lba
 
 	;; enter protected mode
 	cli
@@ -42,7 +46,7 @@ canonicalize:
 BOOT_DRIVE: db 0
 welcome db "Hello", 0
 
-floppy_init:
+disk_init:
 	mov ah, 0h
 	xor dl, dl
 	int 13h
@@ -57,9 +61,12 @@ clear_pipe:
 	mov ds, ax
 	mov ss, ax
 	mov esp, 090000h
+	sti
     mov byte [ds:0B8000h], 'P'
     mov byte [ds:0B8001h], 1Bh
 	jmp 0x8000
+
+
 gdt:
 gdt_null:
 	dq 0
@@ -85,7 +92,3 @@ gdt_desc:
 times 510 - ($ - $$) db 0
 dw 0xAA55
 
-	;;  fill disk with garbage
-;;times 256 dw 0xdada
-;;times 256 dw 0xface
-;;times 32256 dw 0x0

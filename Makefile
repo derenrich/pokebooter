@@ -6,7 +6,7 @@ clean:
 	-rm *.bin *.o *.elf boot.rom
 
 main.elf:
-	gcc -m32 -c -fcf-protection=none  -fomit-frame-pointer -fno-pic -fno-exceptions   -ffreestanding -Wall -Werror main.c  -o main.elf  -Os
+	gcc -m32 -c -fcf-protection=none -mgeneral-regs-only -mno-red-zone  -mgeneral-regs-only  -fomit-frame-pointer -fno-pic -fno-exceptions   -ffreestanding -Wall -Werror main.c  -o main.elf  -Os
 
 main.o: main.elf
 	ld -m elf_i386 -T link.ld -nostdlib main.elf -o main.o

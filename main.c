@@ -49,15 +49,24 @@ void sleep(uint32_t t) {
     }
 }
 
-static volatile int pos = 0;
 
-void handle() {
+static volatile int pos = 0xcafebabe;
+
+struct interrupt_frame {
+    uint64_t instruction_pointer;
+    uint64_t code_segment;
+    uint64_t rflags;
+    uint64_t register_stack_pointer;
+    uint64_t stack_segment;
+};
+//__attribute__((interrupt)) 
+void handle() {//struct interrupt_frame* frame) {
     //__asm__("movl $0xdeadbeef, 0x0");
-    write_hex(0xf0, pos);
-    //volatile char *video = (volatile char*)0xB8000 + pos;
-    //*video = 'X';
-    //video ++;
-    //*video = 0xf0;
+    write_hex(0xf0, pos );
+    volatile char *video = (volatile char*)0xB8000 + pos;
+    *video = 'X';
+    video ++;
+    *video = 0xf0;
     //__asm__("hlt");
     //__asm__("cli");
     pos += 2;
@@ -71,9 +80,15 @@ void handle() {
 
 static struct idt_entry idt[256];
 static struct idt_ptr idt_pointer;
+const char* hellos =  "Hello, World! Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!";
 
-void main() {
+__attribute__ ((section (".text.main"))) void main()  {
     __asm__("cli");
+    //write_hex(0xf0, 0);
+    //write_hex(0xf0, (int) &hellos);
+    //write_string(0xf0, hellos);
+   
+
     //volatile int cs = 0;
     //__asm__("mov %%cs, %%ax;\n\tmov %%ax, %0" : "=m"(cs));
     //write_hex(0xf0, cs);
@@ -92,7 +107,6 @@ void main() {
     __asm__("lidt %0" :: "m"(idt_pointer));
     __asm__("sti");
     __asm__("int $49");
-    volatile uint16_t* buf = (void *) 0x00100000;
     sleep(5);
 
     __asm__("int $49");
@@ -100,21 +114,21 @@ void main() {
 
     __asm__("int $49");
 
-
-    __asm__("cli");
-    __asm__("hlt");
-    
-    write_string(0xf0, "testing1");
-    read_sectors_ATA_PIO(buf, 1, 1);
-    write_string(0xf0, "testing2");
-    sleep(5);
-
-    int x = 0;
-    if (x == 0) {
-        write_string(0xf0, "Hello, World! Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!");//, "Hello, World!");
-    }
     __asm__("cli");
     __asm__("hlt");
     while(1);
+    //write_string(0xf0, "testing1");
+    //volatile uint16_t* buf = (void *) 0x00100000;
+    //read_sectors_ATA_PIO(buf, 1, 1);
+    //write_string(0xf0, "testing2");
+    //sleep(5);
+
+    //int x = 0;
+    //if (x == 0) {
+    //    write_string(0xf0, "Hello, World! Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!");//, "Hello, World!");
+    //}
+    //__asm__("cli");
+    //__asm__("hlt");
+    //while(1);
 
 }

@@ -1,4 +1,4 @@
 
 
-REAL_STACK EQU 0x7000
-DISK_COPY_LOC EQU 0x10000
+REAL_STACK equ 0x7000
+DISK_COPY_LOC equ 0x9000 ; also needs updating in linker script

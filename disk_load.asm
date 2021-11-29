@@ -64,7 +64,7 @@ disk_load_lba:
 memory_dump:
 	mov bx, 0
 	dump_loop:
-	mov ax, [0x8000 + bx]
+	mov ax, [DISK_COPY_LOC + bx]
 	call print_hex
 	inc bx
 	cmp bx, 508
@@ -78,8 +78,8 @@ align 4
 lba_packet:
 	db 0x10	; packet length
 	db 0	; zero
-	.block_num dw 4	; sectors to transfer 
-	.buffer dw 0x8000, 0x0
+	.block_num dw 5	; sectors to transfer 
+	.buffer dw DISK_COPY_LOC, 0x0
 	.lba_start_low dd 1 ; linear address (starts at 0)
 	.lba_start_high dd 0
 

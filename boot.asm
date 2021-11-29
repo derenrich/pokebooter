@@ -30,7 +30,6 @@ canonicalize:
 
 
 	; load compiled C code to RAM
-	;call load_c
 	call disk_load_lba
 
 	;; enter protected mode
@@ -38,6 +37,7 @@ canonicalize:
 	xor ax, ax
 	mov ds, ax
 	lgdt [gdt_desc]
+	lidt [idt_descriptor]
 	mov eax, cr0
 	or eax, 1
 	mov cr0, eax
@@ -61,11 +61,14 @@ clear_pipe:
 	mov ds, ax
 	mov ss, ax
 	mov esp, 090000h
-	sti
     mov byte [ds:0B8000h], 'P'
     mov byte [ds:0B8001h], 1Bh
-	jmp 0x8000
+	jmp DISK_COPY_LOC
 
+
+idt_descriptor:
+    dw 0 ; Size of our idt, always one less than the actual size
+    dd 0 ; Start address of our idt
 
 gdt:
 gdt_null:

@@ -147,9 +147,9 @@ __attribute__ ((section (".text.main"))) void main()  {
     //write_hex(0xf0, idt[49].base_lo);
     //write_hex(0xf0, (uint32_t) &idt_pointer);
     
-    __asm__("lidt %0" :: "m"(idt_pointer));
-    __asm__("sti");
-    __asm__("int $49");
+    //__asm__("lidt %0" :: "m"(idt_pointer));
+    //__asm__("sti");
+    //__asm__("int $49");
     //sleep(5);
 
     //__asm__("int $49");

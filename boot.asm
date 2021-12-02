@@ -17,15 +17,13 @@ canonicalize:
 	mov dh, 18h
 	mov dl, 4fh
 	int 10h
-	;; print welcome message
-	mov si, welcome
-	call print_string
 	call disk_init
 
 
 	; setup video mode
 	mov ah, 0x00
-	mov al, 0x03
+	mov al, 0x13
+	;mov al, 0x03		
 	int 0x10
 
 

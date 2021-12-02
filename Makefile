@@ -1,4 +1,4 @@
-SOURCES=boot.rom
+SOURCES=combined.rom
 
 all: $(SOURCES)
 
@@ -19,3 +19,13 @@ boot.rom: main.o ff.bin
 	nasm boot.asm -f bin -o boot.bin
 	cat /dev/zero | head -c 32256 > zeros.bin
 	cat boot.bin main.o ff.bin  > boot.rom
+
+
+combined.rom: boot.rom
+	# copy over 2000 sectors of data from combined rom
+	dd bs=1 obs=1 if=boot.rom of=combined.rom count=1024000
+	# after that copy the gb emulator at sector 2000 onwards
+	dd bs=1 obs=1 if=chester_gb/chester.bin of=combined.rom seek=1024000 count=1024000
+	# after that copy the gb rom at sector 4000 onwards
+	dd bs=1 obs=1 if=dinosofflineadventure.gb of=combined.rom seek=2048000
+

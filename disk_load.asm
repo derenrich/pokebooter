@@ -65,7 +65,7 @@ memory_dump:
 	mov bx, 0
 	dump_loop:
 	mov ax, [DISK_COPY_LOC + bx]
-	call print_hex
+	;call print_hex
 	inc bx
 	cmp bx, 508
 	jne dump_loop

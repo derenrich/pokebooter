@@ -1,6 +1,12 @@
 #include<stdint.h>
 
 
+void putpixel(int pos_x, int pos_y, unsigned char VGA_COLOR)
+{
+    // VGA color palette https://en.wikipedia.org/wiki/Video_Graphics_Array#/media/File:VGA_palette_with_black_borders.svg
+    unsigned char* location = (unsigned char*)0xA0000 + 320 * pos_y + pos_x;
+    *location = VGA_COLOR;
+}
 void write_string(int color, const char *string, uint16_t pos)
 {
     volatile char *video = (volatile char*)0xB8000 + pos * 2;
@@ -28,9 +34,7 @@ void write_hex(int color, uint32_t hex, uint16_t pos)
         video++;
         *video = color;
         video++;
-        
     }
-
 }
 
 
@@ -110,7 +114,16 @@ static struct idt_ptr idt_pointer;
 const char* hellos =  "Hello, World! Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!";
 
 __attribute__ ((section (".text.main"))) void main()  {
-    __asm__("cli");
+  //for (int i = 0; i < 50; i++) {
+  //      for (int j = 0; j < 50; j++) {
+  //          char color = 0x1f;//0b00000000;
+  //          putpixel(100 + i, 100 + j, color);
+  //      }
+  // }
+
+    //__asm__("cli");
+    //__asm__("hlt");
+    //while(1);
     //write_hex(0xf0, 0);
     //write_hex(0xf0, (int) &hellos);
     //write_string(0xf0, hellos);
@@ -160,28 +173,28 @@ __attribute__ ((section (".text.main"))) void main()  {
     //__asm__("cli");
     //__asm__("hlt");
     //while(1);
-    write_string(0xf0, "start read", 0);
-    sleep(4);
-    volatile uint16_t* buf = (void *) 0x01000000;
     //write_hex(0xf0, *buf, 0);
     write_string(0xf0, "start read", 0);
 
     
-    // read 1024 sectors starting at 1
-    buf = read_sectors(buf, 1, 1024);
+    // read in the game boy emulator
+    volatile uint16_t* gb_buf = (void *) 0x01000000;
+    read_sectors(gb_buf, 2000, 128);
+
+    // read in the game boy rom
+    volatile uint16_t* gb_rom = (void *) 0x0F000000;
+    read_sectors(gb_rom, 4000, 64);
+
     //buf = read_sectors_ATA_PIO(buf, 2, 0);
     //buf = read_sectors_ATA_PIO(buf, 2 + 256, 0);
     //volatile uint32_t* buf2 = (void *) 0x01000000;
 
-    write_hex(0xf0, *(buf-1),0 );
-    sleep(10);
-    //write_hex(0xf0, *(buf + 1), 20);
+    //write_hex(0xf0, *(gb_buf), 0);
+    //sleep(10);
 
-    //write_hex(0xf0, *(buf + 2), 40);
-write_string(0xf0, "done done done 0", 0);
-    sleep(10);
-
-    write_string(0xf0, "done done done", 0);
+    asm volatile ("ljmp $0x08, $0x01000000");
+    //asm volatile ("ljmp $0x08, $0x9000");
+    //asm volatile ("ljmp $0x01000000");
     //sleep(5);
 
     //int x = 0;

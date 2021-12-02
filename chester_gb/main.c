@@ -147,7 +147,7 @@ int keys_update(keys *k) {
 
 bool init_graphics(gpu *g)
 {
-  delay(2000);
+  //delay(2000);
 
   // maybe we can do nothing?
   g->pixel_data = 0;
@@ -183,11 +183,15 @@ volatile void render(gpu *g)
   //delay(2000);
 
   const unsigned int per_line_offset = 256 * 4;
-  
+  //int last_color = 0;
   for (int y = 0; y < Y_RES; y++) {
     const unsigned int line_offset = per_line_offset * y;
     for (int x = 0; x < X_RES; x ++ ) {
       int color = ( (unsigned char*)g->pixel_data)[x*4 + line_offset];
+      
+      color = color >> 4;
+      color = 0x10 | color;
+
       putpixel(x, y, color);
     }
   }

@@ -21,7 +21,7 @@ canonicalize:
 
 
 	; setup video mode
-	mov ah, 0x00
+	;mov ah, 0x00
 	mov al, 0x13
 	;mov al, 0x03		
 	int 0x10

@@ -4,6 +4,17 @@
 #include "util.h"
 
 
+unsigned char port_byte_in (unsigned short port) {
+    unsigned char result;
+    __asm__ volatile("in %%dx, %%al" : "=a" (result) : "d" (port));
+    return result;
+}
+void port_byte_out (unsigned short port, unsigned char data) {
+    __asm__ volatile("out %%al, %%dx" : : "a" (data), "d" (port));
+}
+
+
+
 void write_string(int color, const char *string, uint16_t pos)
 {
     volatile char *video = (volatile char*)0xB8000 + pos * 2;
@@ -34,7 +45,6 @@ void write_hex(int color, uint32_t hex, uint16_t pos)
     }
 }
 
-
 void putpixel(int pos_x, int pos_y, unsigned char VGA_COLOR)
 {
     // VGA color palette https://en.wikipedia.org/wiki/Video_Graphics_Array#/media/File:VGA_palette_with_black_borders.svg
@@ -42,10 +52,6 @@ void putpixel(int pos_x, int pos_y, unsigned char VGA_COLOR)
     *location = VGA_COLOR;
 }
 
-int keys_update(keys *k) {
-  // TODO: handle keys
-  return 0;
-}
 
 static volatile int ticks = 0;
 
@@ -71,6 +77,73 @@ void delay(uint32_t ms)
         }
     }
 }
+
+
+char enable_kb = 0;
+char e0_mode = 0;
+char up_arrow = 0;
+char enter = 0;
+
+
+void read_kb() {
+  // enable KB
+  int ps2_status = 0x64; //command register
+  int ps2_data = 0x60;  // data register
+
+  unsigned char status = port_byte_in(ps2_status); 
+  int read_happened = 0;
+  while((status & 1) == 1) {
+        //write_string(0xf0, "readkb", 0);
+      read_happened = 1;
+      unsigned char code = port_byte_in(ps2_data);
+      switch(code) {
+          case 0xE0:
+            e0_mode = 1;
+            break;
+          case 0x1c:
+            enter = 1;
+            e0_mode = 0;
+            break;
+          case 0x9c:
+            enter = 0;
+            e0_mode = 0;
+            break;
+          case 0xc8:
+            if (e0_mode) {
+              up_arrow = 0;
+              e0_mode = 0;
+            }
+            break;
+          case 0x48:
+            if (e0_mode) {
+              up_arrow = 1;
+              e0_mode = 0;
+            }
+            break;
+          default:
+            e0_mode = 0;
+        }
+      //write_hex(0xf0, code, 40);
+      //delay(400);
+      status = port_byte_in(ps2_status); 
+  }
+  e0_mode = 0;
+  if (!read_happened) {
+  //              write_string(0xf0, "noreadkb", 0);
+  }
+}
+
+
+int keys_update(keys *k) {
+  // TODO: handle keys
+    read_kb();
+  //write_hex(0xf0, enter, 0);
+
+  k->start = enter;
+  k->up = up_arrow;
+  return 1;  
+}
+
 
 bool init_graphics(gpu *g)
 {
@@ -102,6 +175,7 @@ bool lock_texture(gpu *g)
 
 
 
+
 __attribute__ ((noinline))
 volatile void render(gpu *g)
 {
@@ -125,9 +199,13 @@ volatile void render(gpu *g)
 
 
 
+
 __attribute__ ((section (".text.main")))
 int main()
 {
+  //while(1) {
+   read_kb();
+  //}
     static chester chester;
 
     write_string(0xf0, "start", 0);

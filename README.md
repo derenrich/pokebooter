@@ -4,6 +4,8 @@ PokéBooter
 This is a joke "operating system" that only runs Pokémon Red. It's actually a simple protected mode x86 bootloader that bootstraps into a gameboy emulator that runs Pokémon Red. This serves no purpose.
 
 
+![screenshot of pokébooter running in QEMU](pokebooter.png)
+
 Building & Running
 ------------------
 Not sure why you'd want to run this but...

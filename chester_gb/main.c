@@ -174,6 +174,8 @@ bool lock_texture(gpu *g)
 }
 
 
+static const int Y_OFFSET = 20;
+static const int X_OFFSET = 40;
 
 
 __attribute__ ((noinline))
@@ -192,7 +194,7 @@ volatile void render(gpu *g)
       color = color >> 4;
       color = 0x10 | color;
 
-      putpixel(x, y, color);
+      putpixel(x + X_OFFSET, y + Y_OFFSET, color);
     }
   }
 

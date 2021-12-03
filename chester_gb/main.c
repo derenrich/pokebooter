@@ -70,9 +70,10 @@ void delay(uint32_t ms)
                 __asm__("nop");
                 __asm__("nop");
                 __asm__("nop");
-                __asm__("nop");
-                __asm__("nop");
-                __asm__("nop");
+                // run it faster to be less annoying
+                //__asm__("nop");
+                //__asm__("nop");
+                //__asm__("nop");
             }
         }
     }
@@ -82,6 +83,11 @@ void delay(uint32_t ms)
 char enable_kb = 0;
 char e0_mode = 0;
 char up_arrow = 0;
+char down_arrow = 0;
+char left_arrow = 0;
+char right_arrow = 0;
+char x = 0;
+char z = 0;
 char enter = 0;
 
 
@@ -104,10 +110,66 @@ void read_kb() {
             enter = 1;
             e0_mode = 0;
             break;
+          case 0x2d:
+            x = 1;
+            e0_mode =0;
+            break;
+          case 0xAD:
+            x=0;
+            e0_mode = 0;
+            break;
           case 0x9c:
             enter = 0;
             e0_mode = 0;
             break;
+          case 0x2c :
+            z = 1;
+            e0_mode = 0;
+            break;
+          case 0xAC :
+            z = 0;
+            e0_mode = 0;
+            break;
+          // down arrow
+            case 0x50:
+              if (e0_mode) {
+                e0_mode = 0;
+                down_arrow = 1;
+              }
+              break;
+            case 0xd0:
+              if (e0_mode) {
+                e0_mode = 0;
+                down_arrow = 0;
+              }
+              break;
+          // left arrow
+            case 0x4b:
+              if (e0_mode) {
+                e0_mode = 0;
+                left_arrow = 1;
+              }
+              break;
+            case 0xcb:
+              if (e0_mode) {
+                e0_mode = 0;
+                left_arrow = 0;
+              }
+              break;
+          // right arrow
+            case 0x4d:
+              if (e0_mode) {
+                e0_mode = 0;
+                right_arrow = 1;
+              }
+              break;
+            case 0xcd:
+              if (e0_mode) {
+                e0_mode = 0;
+                right_arrow = 0;
+              }
+              break;
+          // up arrow
           case 0xc8:
             if (e0_mode) {
               up_arrow = 0;
@@ -140,7 +202,13 @@ int keys_update(keys *k) {
   //write_hex(0xf0, enter, 0);
 
   k->start = enter;
+  k->a = x;
+  k->b = z;
+  k->left = left_arrow;
+  k->right = right_arrow;
+  k->down = down_arrow;
   k->up = up_arrow;
+
   return 1;  
 }
 
@@ -197,10 +265,6 @@ volatile void render(gpu *g)
       putpixel(x + X_OFFSET, y + Y_OFFSET, color);
     }
   }
-
-        write_string(0xf0, "render end", 0);
-//  delay(2000);
-
 }
 
 

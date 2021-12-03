@@ -27,5 +27,5 @@ combined.rom: boot.rom
 	# after that copy the gb emulator at sector 2000 onwards
 	dd bs=1 obs=1 if=chester_gb/chester.bin of=combined.rom seek=1024000 count=1024000
 	# after that copy the gb rom at sector 4000 onwards
-	dd bs=1 obs=1 if=dinosofflineadventure.gb of=combined.rom seek=2048000
+	dd bs=1 obs=1 if=pokemon.gb of=combined.rom seek=2048000
 

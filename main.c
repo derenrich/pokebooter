@@ -183,7 +183,7 @@ __attribute__ ((section (".text.main"))) void main()  {
 
     // read in the game boy rom
     volatile uint16_t* gb_rom = (void *) 0x0F000000;
-    read_sectors(gb_rom, 4000, 64);
+    read_sectors(gb_rom, 4000, 2048);
 
     //buf = read_sectors_ATA_PIO(buf, 2, 0);
     //buf = read_sectors_ATA_PIO(buf, 2 + 256, 0);

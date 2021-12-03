@@ -76,7 +76,7 @@ bool init(chester *chester, uint8_t* rom)
   uint32_t rom_size = 0;
 
   chester->rom = rom;
-  rom_size = 32768;
+  rom_size = 1048576;
 
   if (!chester->rom)
     {

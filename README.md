@@ -15,6 +15,10 @@ Not sure why you'd want to run this but...
 * Then build the boot image by running `make` in the root folder (this will incoporate the emulator)
 * To run this in qemu execute `run.sh`
 
+Playing
+-------
+* Controls: Start=Enter, DPAD=arrow keys, A=X, B=Z
+* The game is run at a sped up speed because the game is too slow by default
 
 Notes
 -----

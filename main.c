@@ -114,25 +114,6 @@ static struct idt_ptr idt_pointer;
 const char* hellos =  "Hello, World! Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!";
 
 __attribute__ ((section (".text.main"))) void main()  {
-  //for (int i = 0; i < 50; i++) {
-  //      for (int j = 0; j < 50; j++) {
-  //          char color = 0x1f;//0b00000000;
-  //          putpixel(100 + i, 100 + j, color);
-  //      }
-  // }
-
-    //__asm__("cli");
-    //__asm__("hlt");
-    //while(1);
-    //write_hex(0xf0, 0);
-    //write_hex(0xf0, (int) &hellos);
-    //write_string(0xf0, hellos);
-   
-
-    //volatile int cs = 0;
-    //__asm__("mov %%cs, %%ax;\n\tmov %%ax, %0" : "=m"(cs));
-    //write_hex(0xf0, cs);
-
     idt_pointer.limit = (sizeof (struct idt_entry) * 256) - 1;
     idt_pointer.base = (unsigned int) idt;
     idt[49].always0 = 0;
@@ -155,26 +136,9 @@ __attribute__ ((section (".text.main"))) void main()  {
     //idt[6].sel = 0x08; // CS = 0x8
     //idt[6].flags = 0b11101110;//0x8e;
 
-
-    //write_hex(0xf0, ((uint32_t) &handle));
-    //write_hex(0xf0, idt[49].base_lo);
-    //write_hex(0xf0, (uint32_t) &idt_pointer);
     
     //__asm__("lidt %0" :: "m"(idt_pointer));
     //__asm__("sti");
-    //__asm__("int $49");
-    //sleep(5);
-
-    //__asm__("int $49");
-    //sleep(5);
-
-    //__asm__("int $49");
-
-    //__asm__("cli");
-    //__asm__("hlt");
-    //while(1);
-    //write_hex(0xf0, *buf, 0);
-    write_string(0xf0, "start read", 0);
 
     
     // read in the game boy emulator
@@ -185,22 +149,10 @@ __attribute__ ((section (".text.main"))) void main()  {
     volatile uint16_t* gb_rom = (void *) 0x0F000000;
     read_sectors(gb_rom, 4000, 2048);
 
-    //buf = read_sectors_ATA_PIO(buf, 2, 0);
-    //buf = read_sectors_ATA_PIO(buf, 2 + 256, 0);
-    //volatile uint32_t* buf2 = (void *) 0x01000000;
-
-    //write_hex(0xf0, *(gb_buf), 0);
-    //sleep(10);
-
+    // jump into the gameboy emulator we loaded
     asm volatile ("ljmp $0x08, $0x01000000");
-    //asm volatile ("ljmp $0x08, $0x9000");
-    //asm volatile ("ljmp $0x01000000");
-    //sleep(5);
 
-    //int x = 0;
-    //if (x == 0) {
-    //    write_string(0xf0, "Hello, World! Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!Hello, World!");//, "Hello, World!");
-    //}
+    // we should never get here
     __asm__("cli");
     __asm__("hlt");
     while(1);

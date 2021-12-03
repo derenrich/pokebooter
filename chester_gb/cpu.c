@@ -4,53 +4,6 @@
 #include "util.h"
 
 
-void write_string_u(int color, const char *string, uint16_t pos)
-{
-    volatile char *video = (volatile char*)0xB8000 + pos * 2;
-    while(*string != 0 )
-    {
-        *video =  *string;
-        string++;
-        video++;
-        *video = color;
-        video++;
-    }
-}
-
-void write_hex_u(int color, uint32_t hex, uint16_t pos)
-{
-    write_string_u(color, "0x", pos);
-    volatile char *video = (volatile char*)0xB8000 + 4 + pos * 2;
-    for(int i = 0; i < 8; i++) {
-        uint32_t val = (hex >> ((7 - i) * 4)) & 0xf;
-        char c = val + 0x30;
-        if (val > 9) {
-            c += 7;
-        }
-        *video =  c;
-        video++;
-        *video = color;
-        video++;
-    }
-}
-
-void delay_u(uint32_t ms)
-{
-    for (uint32_t i =0; i < 100; i++) {
-        for (uint32_t j =0; j < 1000; j++) {
-            for (int k=0; k < ms; k++) {
-                __asm__("nop");
-                __asm__("nop");
-                __asm__("nop");
-                __asm__("nop");
-                __asm__("nop");
-                __asm__("nop");
-            }
-        }
-    }
-}
-
-
 void cpu_reset(registers *reg)
 {
   reg->pc = 0x0100;

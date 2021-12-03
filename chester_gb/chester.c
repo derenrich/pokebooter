@@ -13,52 +13,6 @@
 #define NULL (0)
 
 
-void write_string_c(int color, const char *string, uint16_t pos)
-{
-    volatile char *video = (volatile char*)0xB8000 + pos * 2;
-    while(*string != 0 )
-    {
-        *video =  *string;
-        string++;
-        video++;
-        *video = color;
-        video++;
-    }
-}
-
-void write_hex_c(int color, uint32_t hex, uint16_t pos)
-{
-    write_string_c(color, "0x", pos);
-    volatile char *video = (volatile char*)0xB8000 + 4 + pos * 2;
-    for(int i = 0; i < 8; i++) {
-        uint32_t val = (hex >> ((7 - i) * 4)) & 0xf;
-        char c = val + 0x30;
-        if (val > 9) {
-            c += 7;
-        }
-        *video =  c;
-        video++;
-        *video = color;
-        video++;
-    }
-}
-
-void delay_c(uint32_t ms)
-{
-    for (uint32_t i =0; i < 100; i++) {
-        for (uint32_t j =0; j < 1000; j++) {
-            for (int k=0; k < ms; k++) {
-                __asm__("nop");
-                __asm__("nop");
-                __asm__("nop");
-                __asm__("nop");
-                __asm__("nop");
-                __asm__("nop");
-            }
-        }
-    }
-}
-
 
 bool init(chester *chester, uint8_t* rom)
 {
@@ -76,15 +30,13 @@ bool init(chester *chester, uint8_t* rom)
   uint32_t rom_size = 0;
 
   chester->rom = rom;
+  // hardcoded ROM size of pokemon red
   rom_size = 1048576;
 
   if (!chester->rom)
     {
       return false;
     }
-    write_string_c(0xf0, "init", 0);
-    write_hex_c(0xf0, (int) &cpu_reset, 30);
-  delay_c(4000);
 
 
   cpu_reset(&chester->cpu_reg);

@@ -97,10 +97,7 @@ void read_kb() {
   int ps2_data = 0x60;  // data register
 
   unsigned char status = port_byte_in(ps2_status); 
-  int read_happened = 0;
   while((status & 1) == 1) {
-        //write_string(0xf0, "readkb", 0);
-      read_happened = 1;
       unsigned char code = port_byte_in(ps2_data);
       switch(code) {
           case 0xE0:
@@ -185,14 +182,9 @@ void read_kb() {
           default:
             e0_mode = 0;
         }
-      //write_hex(0xf0, code, 40);
-      //delay(400);
       status = port_byte_in(ps2_status); 
   }
   e0_mode = 0;
-  if (!read_happened) {
-  //              write_string(0xf0, "noreadkb", 0);
-  }
 }
 
 
@@ -215,11 +207,7 @@ int keys_update(keys *k) {
 
 bool init_graphics(gpu *g)
 {
-  //delay(2000);
-
-  // maybe we can do nothing?
   g->pixel_data = 0;
-  delay(2000);
 
   return true;
 }
@@ -231,12 +219,8 @@ void uninit_graphics(gpu *g)
 
 bool lock_texture(gpu *g)
 {
-          write_string(0xf0, "lock start", 0);
-  //delay(2000);
 
   g->pixel_data = (char *) 0xb000000;
-  write_string(0xf0, "lock end", 0);
-  //delay(2000);
 
   return true;
 }
@@ -249,11 +233,8 @@ static const int X_OFFSET = 40;
 __attribute__ ((noinline))
 volatile void render(gpu *g)
 {
-      write_string(0xf0, "render start", 0);
-  //delay(2000);
 
   const unsigned int per_line_offset = 256 * 4;
-  //int last_color = 0;
   for (int y = 0; y < Y_RES; y++) {
     const unsigned int line_offset = per_line_offset * y;
     for (int x = 0; x < X_RES; x ++ ) {
@@ -273,12 +254,10 @@ volatile void render(gpu *g)
 __attribute__ ((section (".text.main")))
 int main()
 {
-  //while(1) {
    read_kb();
-  //}
-    static chester chester;
+  static chester chester;
 
-    write_string(0xf0, "start", 0);
+
   delay(2000);
 
   //write_hex(0xf0, (int) &chester, 40);
@@ -289,7 +268,6 @@ int main()
   register_get_ticks_callback(&chester, &get_ticks);
   register_delay_callback(&chester, &delay);
   register_gpu_init_callback(&chester, &init_graphics);
-    write_string(0xf0, "gogogo", 0);
   delay(2000);
 
   register_gpu_uninit_callback(&chester, &uninit_graphics);
@@ -298,10 +276,6 @@ int main()
   register_serial_callback(&chester, NULL);
 
   uint8_t * rom = (uint8_t *) 0x0F000000;
-
-  write_string(0xf0, "registered", 0);
-  //write_hex(0xf0, (int) &init, 30);
-  delay(2000);
 
   if (!init(&chester, rom))
     {
@@ -314,10 +288,7 @@ int main()
     }
 
 
-  write_string(0xf0, "wall", 0);
-  //write_hex(0xf0, (int) &init, 30);
-  delay(2000);
-
+  // we should never get here
   __asm__("cli");
   __asm__("hlt");
   while(1);
